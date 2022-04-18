@@ -30,5 +30,11 @@ def train_model():
 def apply_model():
     pass
 
+def clean_text():
+    pass
+
+def count_features():
+    pass
+
 if __name__ == "__main__":
     main()
