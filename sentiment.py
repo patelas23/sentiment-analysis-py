@@ -17,6 +17,10 @@
 
 import sys
 import re
+import itertools
+
+from collections import defaultdict
+
 
 def main():
 
@@ -33,8 +37,21 @@ def main():
 
     print(extract_context(training_text))
 
-def train_model(context_lines, sentiment_lines):
-    pass
+
+# Function which counts each occurrence of a word
+#     with a given sentiment
+def train_model(corpus_text):
+    model_dict = defaultdict()
+    context_lines = extract_context(corpus_text)
+    sentiment_lines = extract_sentiment(corpus_text)
+
+    # Iterate over both lists in parallel
+    for context, sentiment in zip(context_lines, sentiment_lines):
+        current_line = context.split()
+        for word in current_line:
+            if word in model_dict:
+                pass
+
 
 def apply_model():
     pass
@@ -43,6 +60,7 @@ def apply_model():
 def count_features(feature, context_line):
     pass
 
+
 # Helper function returns a list of lines from corpus
 #     demarcated by:
 #         <context> This is a tweet. </context>
@@ -50,13 +68,16 @@ def extract_context(corpus_text):
     print("here")
     return re.findall(r'<context>\s+(.*)\s+</context>', corpus_text)
 
+
 # Helper function returns a list of sentiment tags
 #     corresponding to lines of context
 def extract_sentiment(corpus_text):
     return re.findall(r'sentiment="(\S+)"/>', corpus_text)
 
+
 def clean_text(corpus_text):
     re.sub(r'', "", corpus_text)
+
 
 if __name__ == "__main__":
     main()
