@@ -55,15 +55,17 @@ def train_model(corpus_text):
                 model_dict[word] = 1.0
 
 
-def apply_model():
+def apply_model(test_corpus):
     pass
 
 
-def count_features(sentiment, context_line, model):
+def count_features(sentiment, context_line, feature_dict):
     for word in context_line:
-        if word in model:
-            pass
-
+        if word in feature_dict:
+            feature_dict[word] += 1.0
+        else:
+            feature_dict[word] = 1.0
+    return feature_dict
 
 # Helper function returns a list of lines from corpus
 #     demarcated by:
