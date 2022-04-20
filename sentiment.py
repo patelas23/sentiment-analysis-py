@@ -45,33 +45,44 @@ def train_model(corpus_text):
     context_lines = extract_context(corpus_text)
     sentiment_lines = extract_sentiment(corpus_text)
 
+    positive_dict = defaultdict()
+    negative_dict = defaultdict()
+
+    positive_count = 0
+    negative_count = 0
+
     # Iterate over both lists in parallel
     for context, sentiment in zip(context_lines, sentiment_lines):
         current_line = context.split()
-        for word in current_line:
-            if word in model_dict:
-                pass
-            else:
-                model_dict[word] = 1.0
+        if(sentiment == "positive"):
+            count_features(sentiment, current_line, positive_dict)
+            positive_count += 1
+        else:
+            count_features(sentiment, current_line, negative_dict)
+            negative_count += 1
+
+    # Sort each sentiment dictionary
+    #
+    # Calculate log-likelihood of each word for each sentiment
 
 
 def apply_model(test_corpus):
-    pass
+    test_lines = extract_context(test_corpus)
 
 
 def count_features(sentiment, context_line, feature_dict):
-    for word in context_line:
+    current_line = context_line.split()
+    for word in current_line:
         if word in feature_dict:
             feature_dict[word] += 1.0
         else:
             feature_dict[word] = 1.0
-    return feature_dict
+
 
 # Helper function returns a list of lines from corpus
 #     demarcated by:
 #         <context> This is a tweet. </context>
 def extract_context(corpus_text):
-    print("here")
     return re.findall(r'<context>\s+(.*)\s+</context>', corpus_text)
 
 
@@ -84,16 +95,17 @@ def extract_sentiment(corpus_text):
 def clean_text(corpus_text):
     return re.sub(r'', "", corpus_text)
 
+
 # Method which writes calculated model to file
-def write_model_to_file(model):
-    for word in model:
-        model_tup = model[word]
-        tup_sentiment = model_tup[0]
-        tup_likelihood = model_tup[1]
+def write_model_to_file(model, file_path):
+    with open(file_path) as f:
+        for word in model:
+            model_tup = model[word]
+            tup_sentiment = model_tup[0]
+            tup_likelihood = model_tup[1]
 
-        sys.stdout.write("Word: " + word + "; Sentiment: " + tup_sentiment + 
-                         "; Likelihood: " + tup_likelihood)
-
+            f.write("Word: " + word + "; Sentiment: " + tup_sentiment + 
+                             "; Likelihood: " + tup_likelihood)
 
 
 if __name__ == "__main__":
