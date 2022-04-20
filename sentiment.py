@@ -55,10 +55,10 @@ def train_model(corpus_text):
     for context, sentiment in zip(context_lines, sentiment_lines):
         current_line = context.split()
         if(sentiment == "positive"):
-            count_features(sentiment, current_line, positive_dict)
+            count_features(current_line, positive_dict)
             positive_count += 1
         else:
-            count_features(sentiment, current_line, negative_dict)
+            count_features(current_line, negative_dict)
             negative_count += 1
 
     # Sort each sentiment dictionary
@@ -70,13 +70,25 @@ def apply_model(test_corpus):
     test_lines = extract_context(test_corpus)
 
 
-def count_features(sentiment, context_line, feature_dict):
+# Function which populates supplied dictionary with the count of each feature
+def count_features(context_line, feature_dict):
     current_line = context_line.split()
     for word in current_line:
         if word in feature_dict:
             feature_dict[word] += 1.0
         else:
             feature_dict[word] = 1.0
+
+
+# Function for determining the log-likelihood in the supplied dictionary
+def calculate_likelihood():
+    pass
+
+
+# Function to combine sentiment dictionaries, removing overlaps
+#     where the likelihood of one is higher than the other.
+def remove_overlaps(negative_bag, positive_bag):
+    pass
 
 
 # Helper function returns a list of lines from corpus
