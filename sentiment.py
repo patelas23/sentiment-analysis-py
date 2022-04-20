@@ -82,7 +82,18 @@ def extract_sentiment(corpus_text):
 
 
 def clean_text(corpus_text):
-    re.sub(r'', "", corpus_text)
+    return re.sub(r'', "", corpus_text)
+
+# Method which writes calculated model to file
+def write_model_to_file(model):
+    for word in model:
+        model_tup = model[word]
+        tup_sentiment = model_tup[0]
+        tup_likelihood = model_tup[1]
+
+        sys.stdout.write("Word: " + word + "; Sentiment: " + tup_sentiment + 
+                         "; Likelihood: " + tup_likelihood)
+
 
 
 if __name__ == "__main__":
