@@ -22,8 +22,6 @@ import itertools
 
 from collections import defaultdict
 
-from sklearn.covariance import log_likelihood
-
 
 def main():
 
@@ -68,9 +66,13 @@ def train_model(corpus_text):
     return model_dict
 
 
-
-def apply_model(test_corpus):
+def apply_model(test_corpus, model):
     test_lines = extract_context(test_corpus)
+    for line in test_lines:
+        current_line = line.split()
+        for word in current_line:
+            if word in model:
+                sys.stdout.write("Sentiment: " + model[word][0])
 
 
 # Function which populates supplied dictionary with the count of each feature
@@ -88,6 +90,9 @@ def count_features(context_line, feature_dict):
 #    vocab: dictionary containing all parsed words and their associated counts
 #    features: dictionary containing count of each instance of a word with a
 #        certain sentiment
+# OUT:
+#    sorted_likelihood: dictionary containing sentiment value and
+#         log-likelihood, sorted by overall level of discrimination
 def calculate_discrimination(vocab, features):
     likelihood_dict = defaultdict()
     for word in vocab:
