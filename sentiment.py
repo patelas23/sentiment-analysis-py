@@ -142,7 +142,14 @@ def calculate_discrimination(vocab, features):
 
         discriminator = math.log(positive_prob/negative_prob)
 
+        if (discriminator < 0):
+            likelihood_dict[word] = (math.fabs(discriminator), "negative")
+        else:
+            likelihood_dict[word] = (math.fabs(discriminator), "positive")
+
         likelihood_dict[word] = (discriminator)
+
+    return likelihood_dict
 
 
 # Function for determining the log-likelihood in the supplied dictionary
