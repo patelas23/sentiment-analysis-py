@@ -28,8 +28,8 @@ from sklearn.covariance import log_likelihood
 def main():
 
     training_file_name = sys.argv[1]
-    # test_file_name = sys.argv[2]
-    # training_model_file_name = sys.argv[3]
+    test_file_name = sys.argv[2]
+    training_model_file_name = sys.argv[3]
 
     # Input buffers
     training_text = ""
@@ -38,52 +38,11 @@ def main():
     with open(training_file_name) as f:
         training_text = f.read()
 
-    print(extract_context(training_text))
+    model_dict = train_model(training_text)
+    write_model_to_file(model_dict, training_model_file_name)
 
 
-# Function which counts each occurrence of a word
-#     with a given sentiment
 def train_model(corpus_text):
-    model_dict = defaultdict()
-    context_lines = extract_context(corpus_text)
-    sentiment_lines = extract_sentiment(corpus_text)
-
-    positive_dict = defaultdict()
-    negative_dict = defaultdict()
-    vocabulary = defaultdict()
-
-    positive_count = 0.0
-    negative_count = 0.0
-    tweet_count = 0.0
-
-    # Iterate over both lists in parallel, counting each occurence 
-    # of a feature with a particular sentiment
-    for context, sentiment in zip(context_lines, sentiment_lines):
-        tweet_count += 1
-        current_line = context.split()
-        if(sentiment == "positive"):
-            count_features(current_line, positive_dict)
-            positive_count += 1
-        else:
-            count_features(current_line, negative_dict)
-            negative_count += 1
-
-    # Calculate log-likelihood of each word for each sentiment
-    calculate_likelihood(positive_dict, positive_count, tweet_count)
-    calculate_likelihood(negative_dict, negative_count, tweet_count)
-    # populate vocabulary with word counts
-    for context, sentiment in zip(context_lines, sentiment_lines):
-        current_line = context.split()
-        for word in current_line:
-            if word in vocabulary:
-                vocabulary[word] += 1
-            else:
-                vocabulary[word] = 1
-    # count each sentime
-    # Sort each sentiment dictionary
-    # Use top 100 words for classifier
-
-def train_model_new(corpus_text):
     vocabulary = defaultdict(int)
     sentiment_dict = defaultdict(int)
 
@@ -105,6 +64,10 @@ def train_model_new(corpus_text):
             else:
                 sentiment_dict[feature_tup] = 1
 
+    model_dict = calculate_discrimination(vocabulary, sentiment_dict)
+    return model_dict
+
+
 
 def apply_model(test_corpus):
     test_lines = extract_context(test_corpus)
@@ -119,8 +82,12 @@ def count_features(context_line, feature_dict):
         else:
             feature_dict[word] = 1.0
 
-# Calculates the ratio of positive to negative sentiment for each word, 
-#
+
+# Calculates the ratio of positive to negative sentiment for each word,
+# IN:
+#    vocab: dictionary containing all parsed words and their associated counts
+#    features: dictionary containing count of each instance of a word with a
+#        certain sentiment
 def calculate_discrimination(vocab, features):
     likelihood_dict = defaultdict()
     for word in vocab:
@@ -147,25 +114,14 @@ def calculate_discrimination(vocab, features):
         else:
             likelihood_dict[word] = (math.fabs(discriminator), "positive")
 
-        likelihood_dict[word] = (discriminator)
+        # likelihood_dict[word] = (discriminator)
 
-    return likelihood_dict
+    # Sort dictionary by total level of discrimination
+    sorted_likelihood = dict(sorted(likelihood_dict.items(),
+                                    key=lambda x: x[1][0]))
 
-
-# Function for determining the log-likelihood in the supplied dictionary
-def calculate_likelihood(feature_dict, sentiment_count, tweet_count):
-    likelihood_dict = defaultdict(float)
-    sentiment_likelihood = math.log(float(sentiment_count/tweet_count))
-    for word in feature_dict:
-        feature_sentiment_ratio = math.log(feature_dict[word]/sentiment_count)
-        word_sentiment_likelihood = sentiment_likelihood + feature_sentiment_ratio
-        feature_dict[word] = word_sentiment_likelihood
-
-
-# Function to combine sentiment dictionaries, removing overlaps
-#     where the likelihood of one is higher than the other.
-def remove_overlaps(negative_bag, positive_bag):
-    pass
+    # return likelihood_dict
+    return sorted_likelihood
 
 
 # Helper function returns a list of lines from corpus
@@ -190,11 +146,11 @@ def write_model_to_file(model, file_path):
     with open(file_path) as f:
         for word in model:
             model_tup = model[word]
-            tup_sentiment = model_tup[0]
-            tup_likelihood = model_tup[1]
+            tup_likelihood = model_tup[0]
+            tup_sentiment = model_tup[1]
 
-            f.write("Word: " + word + "; Sentiment: " + tup_sentiment + 
-                             "; Likelihood: " + tup_likelihood)
+            f.write("Word: " + word + "; Sentiment: " + tup_sentiment +
+                    "; Likelihood: " + tup_likelihood)
 
 
 if __name__ == "__main__":
