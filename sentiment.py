@@ -2,7 +2,7 @@
 # Author: Ankur Patel
 # Course: Natural Language Processing
 # CourseID: CMSC416-SP2022
-# Instructor: Caroline Budwell
+# Instructor: Bridgette Mckinnes
 #
 # A decision-list based sentiment classifier for
 # identifying sentiment from a given sample of tweets
@@ -39,7 +39,18 @@ def main():
     model_dict = train_model(training_text)
     write_model_to_file(model_dict, training_model_file_name)
 
+    with open(test_file_namef) as f:
+        test_text = f.read()
 
+    apply_model(test_text, model_dict)
+
+
+# Counts each occurence of a word, and its word-sentiment pair from the given
+#    text, and returns a trained classifier 
+# IN: 
+#    corpus_text - string containing sentiment-annotated tweets
+# OUT:
+#    model_dict - dictionary of the form {word: (discrimination, sentiment)}
 def train_model(corpus_text):
     vocabulary = defaultdict(int)
     sentiment_dict = defaultdict(int)
@@ -66,6 +77,14 @@ def train_model(corpus_text):
     return model_dict
 
 
+# Use generated model to classify given tweets by sentiment
+#    using a decision-list classifier
+#
+# IN:
+#    test_corpus: string of tweets to be analyzed
+#    model: dictionary containing sentiment vocabulary
+# OUT:
+#    output of the function is logged to specified file
 def apply_model(test_corpus, model):
     test_lines = extract_context(test_corpus)
     for line in test_lines:
