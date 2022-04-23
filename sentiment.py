@@ -18,7 +18,6 @@
 import math
 import sys
 import re
-import itertools
 
 from collections import defaultdict
 
@@ -39,10 +38,10 @@ def main():
     model_dict = train_model(training_text)
     write_model_to_file(model_dict, training_model_file_name)
 
-    with open(test_file_namef) as f:
-        test_text = f.read()
-
-    apply_model(test_text, model_dict)
+#    with open(test_file_name) as f:
+#        test_text = f.read()
+#
+#    apply_model(test_text, model_dict)
 
 
 # Counts each occurence of a word, and its word-sentiment pair from the given
@@ -67,7 +66,7 @@ def train_model(corpus_text):
             else:
                 vocabulary[word] = 1
             # Count of word given sentiment
-            feature_tup = tuple(word, sentiment)
+            feature_tup = (word, sentiment)
             if feature_tup in sentiment_dict:
                 sentiment_dict[feature_tup] += 1
             else:
