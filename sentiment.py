@@ -127,7 +127,7 @@ def calculate_discrimination(vocab, features):
         else:
             negative_count = 1.0
 
-        print(positive_count)
+        # print(positive_count)
         positive_prob = float(positive_count)/float(vocab[word])
         negative_prob = float(negative_count)/float(vocab[word])
 
@@ -142,7 +142,8 @@ def calculate_discrimination(vocab, features):
 
     # Sort dictionary by total level of discrimination
     sorted_likelihood = dict(sorted(likelihood_dict.items(),
-                                    key=lambda x: x[1][0]))
+                                    key=lambda x: x[1][0],
+                                    reverse=True))
 
     # return likelihood_dict
     return sorted_likelihood
