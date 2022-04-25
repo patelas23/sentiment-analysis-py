@@ -62,15 +62,15 @@ def train_model(corpus_text):
         for word in current_line:
             # Raw word count
             if word in vocabulary:
-                vocabulary[word] += 1
+                vocabulary[word] += 1.0
             else:
-                vocabulary[word] = 1
+                vocabulary[word] = 1.0
             # Count of word given sentiment
             feature_tup = (word, sentiment)
             if feature_tup in sentiment_dict:
-                sentiment_dict[feature_tup] += 1
+                sentiment_dict[feature_tup] += 1.0
             else:
-                sentiment_dict[feature_tup] = 1
+                sentiment_dict[feature_tup] = 1.0
 
     model_dict = calculate_discrimination(vocabulary, sentiment_dict)
     return model_dict
@@ -127,8 +127,9 @@ def calculate_discrimination(vocab, features):
         else:
             negative_count = 1.0
 
-        positive_prob = float(positive_count/vocab[word])
-        negative_prob = float(negative_count/vocab[word])
+        print(positive_count)
+        positive_prob = float(positive_count)/float(vocab[word])
+        negative_prob = float(negative_count)/float(vocab[word])
 
         discriminator = math.log(positive_prob/negative_prob)
 
@@ -166,14 +167,14 @@ def clean_text(corpus_text):
 
 # Method which writes calculated model to file
 def write_model_to_file(model, file_path):
-    with open(file_path) as f:
+    with open(file_path, "w") as f:
         for word in model:
             model_tup = model[word]
             tup_likelihood = model_tup[0]
             tup_sentiment = model_tup[1]
 
             f.write("Word: " + word + "; Sentiment: " + tup_sentiment +
-                    "; Likelihood: " + tup_likelihood)
+                    "; Likelihood: " + str(tup_likelihood) + "\n")
 
 
 if __name__ == "__main__":
