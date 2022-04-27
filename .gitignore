@@ -1,0 +1,2 @@
+# ignore python3 venv (virtual environment) folder
+env/
