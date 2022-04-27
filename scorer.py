@@ -6,6 +6,9 @@
 
 # Helper program for generating grading the accuracy of sentiment.py
 #     generating a confusion matrix for analysis
+# IN: predicted answers, expected answers
+# OUT: accuracy score and confusion matrix
+# USAGE: 
 
 # Imports
 import re
@@ -27,6 +30,7 @@ def main():
     with open(answer_key_file) as f:
         answer_key_string = f.read()
 
+    print(my_answer_string)
     my_sentiment_answers = get_sentiment(my_answer_string)
     sentiment_answer_key = get_sentiment(answer_key_string)
 
@@ -34,8 +38,8 @@ def main():
 
 
 # Extract sentences from test data
-def get_sentiment(asnwers_string):
-    result = re.findall(r'sentiment="(\S+)"', answer_string)
+def get_sentiment(answers_string):
+    return re.findall(r'sentiment="(\S+)"', answers_string)
 
 
 # Compare actual and expected values to produce confusion matrix
@@ -43,8 +47,8 @@ def get_confusion_stats(actual, predicted):
     actual_series = pd.Series(actual, name="Actual")
     predicted_series = pd.Series(predicted, name="Predicted")
     sys.stdout.write("Accuracy Score: " +
-                     str(metrics.accuracy_scoreaccur(actual,
-                         predicted + "\n")))
+                     str(metrics.accuracy_score(actual_series,
+                         predicted_series)) + "\n")
     sys.stdout.write("Confusion Matrix \n" +
                      str(pd.crosstab(actual_series, predicted_series)) + "\n")
 

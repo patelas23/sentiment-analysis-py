@@ -89,8 +89,17 @@ def apply_model(test_corpus, model):
     for line in test_lines:
         current_line = line.split()
         for word in current_line:
+            # Decision list with three of my own features
+            if word == "":
+                break
+            elif word == "":
+                break
+            elif word == "":
+                break
+            # If hand-picked features fail, check sentiment model
             if word in model:
-                sys.stdout.write("Sentiment: " + str(model[word][1]) + "\n")
+                sys.stdout.write('sentiment="' + str(model[word][1]) + '"\n')
+                break
 
 
 # Function which populates supplied dictionary with the count of each feature
