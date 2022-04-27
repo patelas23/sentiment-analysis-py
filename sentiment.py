@@ -38,10 +38,10 @@ def main():
     model_dict = train_model(training_text)
     write_model_to_file(model_dict, training_model_file_name)
 
-#    with open(test_file_name) as f:
-#        test_text = f.read()
-#
-#    apply_model(test_text, model_dict)
+    with open(test_file_name) as f:
+        test_text = f.read()
+
+    apply_model(test_text, model_dict)
 
 
 # Counts each occurence of a word, and its word-sentiment pair from the given
@@ -90,7 +90,7 @@ def apply_model(test_corpus, model):
         current_line = line.split()
         for word in current_line:
             if word in model:
-                sys.stdout.write("Sentiment: " + model[word][0])
+                sys.stdout.write("Sentiment: " + str(model[word][1]) + "\n")
 
 
 # Function which populates supplied dictionary with the count of each feature

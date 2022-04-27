@@ -34,6 +34,8 @@ def main():
 # Create map of sense words from answer key
 
 # Extract sentences from test data
+def get_sentiment(asnwers_string):
+    result = ""
 
 
 # Compare actual and expected values to produce confusion matrix
