@@ -8,6 +8,7 @@
 #     generating a confusion matrix for analysis
 
 # Imports
+import re
 import sys
 import pandas as pd
 from sklearn import metrics
@@ -31,11 +32,10 @@ def main():
 
     get_confusion_stats(sentiment_answer_key, my_sentiment_answers)
 
-# Create map of sense words from answer key
 
 # Extract sentences from test data
 def get_sentiment(asnwers_string):
-    result = ""
+    result = re.findall(r'sentiment="(\S+)"', answer_string)
 
 
 # Compare actual and expected values to produce confusion matrix
@@ -46,9 +46,7 @@ def get_confusion_stats(actual, predicted):
                      str(metrics.accuracy_scoreaccur(actual,
                          predicted + "\n")))
     sys.stdout.write("Confusion Matrix \n" +
-                     str(pd.crosstab(actual_series, predicted_series)))
-
-
+                     str(pd.crosstab(actual_series, predicted_series)) + "\n")
 
 
 if __name__ == "__main__":
