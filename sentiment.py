@@ -7,13 +7,26 @@
 # A decision-list based sentiment classifier for
 # identifying sentiment from a given sample of tweets
 #
-# Usage: python3 sentiment.py training_file.txt test_file.txt model_file.txt
+# USAGE: python3 sentiment.py training_file.txt test_file.txt model_file.txt
 #         > output_answers.txt
 #
 # IN: training_file: set of tweets annotated with sentiment classification
 #       test_file: set of tweets to be analyzed for sentiment
 #     model_file: name of file to contain sentiment statistics
 # OUT: Trained sentiment classifier
+# 
+# ALGORITHM: 
+#     1. Parse input text into list of lines and their sentiment
+#     2. Count each instance of a word with its lines sentiment
+#     3. Calculate log-likelihood of each word:sentiment relation
+#     4. Parse test file
+#     5. Test input against three given base cases
+#     6. Test input against each sentiment in model
+#     7. Log trained model and answers to their respective files
+#
+# ACCURACY:
+#     most frequent sense: 0.6866
+#     sentiment.py: 0.6853
 
 import math
 import sys
@@ -56,9 +69,21 @@ def train_model(corpus_text):
 
     context_lines = extract_context(corpus_text)
     sentiment_values = extract_sentiment(corpus_text)
+    
+    corpus_count = len(context_lines)
+    
+    negative_count = 0.0
+    positive_count = 0.0
+    mfs_count = 0.0
 
     for context, sentiment in zip(context_lines, sentiment_values):
         current_line = context.split()
+        # Count each sense for mfs calculation
+        if sentiment == "positive":
+            positive_count += 1.0
+        else:
+            negative_count += 1.0
+        
         for word in current_line:
             # Raw word count
             if word in vocabulary:
@@ -71,6 +96,15 @@ def train_model(corpus_text):
                 sentiment_dict[feature_tup] += 1.0
             else:
                 sentiment_dict[feature_tup] = 1.0
+    
+    # Determine most frequent sense from training data
+    if positive_count > negative_count:
+        mfs_count = positive_count
+    else:
+        mfs_count = negative_count
+    
+    sys.stdout.write("Most frequent sense accuracy for training data: ")
+    sys.stdout.write(str(mfs_count/corpus_count) + "\n")
 
     model_dict = calculate_discrimination(vocabulary, sentiment_dict)
     return model_dict
@@ -85,8 +119,10 @@ def train_model(corpus_text):
 # OUT:
 #    output of the function is logged to specified file
 def apply_model(test_corpus, model):
+    line_count = 0
     test_lines = extract_context(test_corpus)
     for line in test_lines:
+        line_count += 1
         current_sentiment = "none"
         current_line = line.split()
         # Decision list with three of my own features
@@ -101,8 +137,8 @@ def apply_model(test_corpus, model):
             for word in current_line:
                 if word in model:
                     current_sentiment = str(model[word][1])
-                    # sys.stdout.write('sentiment="' + str(model[word][1]) + '"\n')
                     break
+        
         # If no sentiment was determined, default to "positive"
         if current_sentiment == "none":
             current_sentiment = "positive"

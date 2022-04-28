@@ -1,3 +1,4 @@
+Most frequent sense accuracy for training data: 0.6866952789699571
 sentiment="positive"
 sentiment="positive"
 sentiment="positive"
