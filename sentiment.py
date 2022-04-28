@@ -85,11 +85,10 @@ def train_model(corpus_text):
 # OUT:
 #    output of the function is logged to specified file
 def apply_model(test_corpus, model):
-    current_sentiment = ""
     test_lines = extract_context(test_corpus)
     for line in test_lines:
+        current_sentiment = "none"
         current_line = line.split()
-
         # Decision list with three of my own features
         if "fuck" in current_line:
             current_sentiment = "negative"
@@ -98,12 +97,18 @@ def apply_model(test_corpus, model):
         elif "best" in current_line:
             current_sentiment = "positive"
         else:
+            # If hand-picked features fail, check sentiment model
             for word in current_line:
-                # If hand-picked features fail, check sentiment model
                 if word in model:
                     current_sentiment = str(model[word][1])
-                    sys.stdout.write('sentiment="' + str(model[word][1]) + '"\n')
+                    # sys.stdout.write('sentiment="' + str(model[word][1]) + '"\n')
                     break
+        # If no sentiment was determined, default to "positive"
+        if current_sentiment == "none":
+            current_sentiment = "positive"
+
+        # Write result to standard output
+        sys.stdout.write('sentiment="' + current_sentiment + '"\n')
 
 
 # Function which populates supplied dictionary with the count of each feature
